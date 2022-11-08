@@ -11,8 +11,11 @@ let err2 = document.getElementById("err2");
 let date = new Date();
 // console.log(date.getHours());
 let hour = date.getHours();
+let newHour = hour.toString().padStart(2, 0);
 let minute = date.getMinutes();
-console.log(hour, minute);
+let newMinute = minute.toString().padStart(2, 0);
+
+let timee = `${hour}:${minute}`;
 
 function generate() {
   if (amount.value == "") {
@@ -44,6 +47,7 @@ function savePin() {
     amount: amount1,
     pin: gPin,
     status: "UNUSED",
+    time: timee,
   };
   myar.push(data);
   create();
@@ -74,8 +78,8 @@ function show() {
     <td> ${ele.amount}</td> 
     <td> ${ele.pin}</td> 
     <td> <p>${ele.status}</p> </td> 
-    <td> <p>${hour}:${minute}</p> </td> 
-    <td> <button class=" w-50 btn btn-danger " onclick='del(${i})'>Del</button> </td> 
+    <td> <p>${ele.time}</p> </td> 
+    <td> <button class="  btn btn-danger " onclick='del(${i})'>Del</button> </td> 
     </tr>`;
   });
 }
@@ -107,39 +111,70 @@ function getPin() {
 seen = false;
 let load = document.getElementById("load");
 function loadCard() {
-  if (load.value == "") {
+  if (load.value === "") {
     err2.innerHTML = "Pin Cannot be empty";
     err2.hidden = false;
     setTimeout(() => {
       err2.hidden = true;
     }, 3000);
   } else {
-    myar.forEach((element, index) => {
-      if (load.value === element.pin) {
-        if (element.status == "USED") {
+    for (let index = 0; index < myar.length; index++) {
+      if (load.value === myar[index].pin) {
+        seen = true;
+        if (myar[index].status === "USED") {
           err2.innerHTML = "Pin is already used";
           err2.hidden = false;
           setTimeout(() => {
             err2.hidden = true;
           }, 3000);
-          seen = true;
-        } else if (element.status !== "USED" && load.value !== "") {
-          none.hidden = false;
-          sho.innerHTML = `YOU HAVE SUCCESSFULLY RECHARGE ${ele.amount} CARD`;
+        } else if (myar[index].status === "UNUSED") {
+          alert(`YOU HAVE SUCCESSFULLY RECHARGE #${myar[index].amount} CARD`);
           setTimeout(() => {}, 3000);
           myar[index].status = "USED";
           localStorage.setItem("cardTable", JSON.stringify(myar));
           create();
         }
-      } else {
+        setTimeout(() => {
+          seen = false;
+        }, 500);
+      } else if (index == myar.length - 1 && seen == false) {
         err2.innerHTML = "INVALID PIN";
         err2.hidden = false;
         setTimeout(() => {
           err2.hidden = true;
         }, 3000);
       }
-    });
+    }
   }
+  // else {
+  //   myar.forEach((element, index, myarr) => {
+  //     if (load.value === element.pin) {
+  //       if (element.status === "USED") {
+  //         err2.innerHTML = "Pin is already used";
+  //         err2.hidden = false;
+  //         setTimeout(() => {
+  //           err2.hidden = true;
+  //         }, 3000);
+  //         console.log(element.pin, load.value, element.status);
+
+  //         return;
+  //       } else if (element.status !== "USED") {
+  //         alert(`YOU HAVE SUCCESSFULLY RECHARGE #${element.amount} CARD`);
+  //         setTimeout(() => {}, 3000);
+  //         myar[index].status = "USED";
+  //         localStorage.setItem("cardTable", JSON.stringify(myar));
+  //         create();
+  //         return;
+  //       }
+  //     } else {
+  //       err2.innerHTML = "INVALID PIN";
+  //       err2.hidden = false;
+  //       setTimeout(() => {
+  //         err2.hidden = true;
+  //       }, 3000);
+  //     }
+  // });
+  // }
 }
 
 let items;
